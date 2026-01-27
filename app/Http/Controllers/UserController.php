@@ -35,7 +35,7 @@ class UserController extends Controller
             'email' => 'nullable|email|max:255',
             'password' => 'required|string|min:6',
             'status' => 'required|in:A,I',
-            'groups' => 'nullable|array',
+            'groups' => 'nullable|array|max:1',
             'groups.*' => 'exists:permgroups,id'
         ]);
 
@@ -52,7 +52,7 @@ class UserController extends Controller
             'email' => 'nullable|email|max:255',
             'password' => 'nullable|string|min:6',
             'status' => 'required|in:A,I',
-            'groups' => 'nullable|array',
+            'groups' => 'nullable|array|max:1',
             'groups.*' => 'exists:permgroups,id'
         ]);
 

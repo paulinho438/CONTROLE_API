@@ -31,8 +31,11 @@ class UserService
 
         $user = $this->repository->create($data);
         
-        if (!empty($groups)) {
-            $this->repository->syncGroups($user->id, $groups);
+        // Garantir que apenas o primeiro grupo seja usado (se houver)
+        if (!empty($groups) && is_array($groups)) {
+            $this->repository->syncGroups($user->id, [reset($groups)]);
+        } else {
+            $this->repository->syncGroups($user->id, []);
         }
 
         return $user->load('groups');
@@ -56,8 +59,11 @@ class UserService
 
         $user = $this->repository->update($id, $data);
         
-        if ($groups !== null) {
-            $this->repository->syncGroups($user->id, $groups);
+        // Garantir que apenas o primeiro grupo seja usado (se houver)
+        if ($groups !== null && is_array($groups) && !empty($groups)) {
+            $this->repository->syncGroups($user->id, [reset($groups)]);
+        } else {
+            $this->repository->syncGroups($user->id, []);
         }
 
         return $user->load('groups');
