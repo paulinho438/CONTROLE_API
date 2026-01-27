@@ -16,6 +16,7 @@ use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SaidaController;
 use App\Http\Controllers\PrevisaoController;
 use App\Http\Controllers\TransferenciaController;
+use App\Http\Controllers\UserController;
 
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -34,6 +35,16 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('permission:permissoes.create')->post('/permission_groups', [PermissionGroupController::class, 'store']);
     Route::middleware('permission:permissoes.edit')->put('/permission_groups/{id}', [PermissionGroupController::class, 'update']);
     Route::middleware('permission:permissoes.delete')->delete('/permission_groups/{id}', [PermissionGroupController::class, 'destroy']);
+
+    // Usuários
+    Route::middleware('permission:usuarios.view')->group(function () {
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/{id}', [UserController::class, 'show']);
+    });
+    
+    Route::middleware('permission:usuarios.create')->post('/users', [UserController::class, 'store']);
+    Route::middleware('permission:usuarios.edit')->put('/users/{id}', [UserController::class, 'update']);
+    Route::middleware('permission:usuarios.delete')->delete('/users/{id}', [UserController::class, 'destroy']);
 
     // Dashboard
     Route::middleware('permission:dashboard.view')->group(function () {

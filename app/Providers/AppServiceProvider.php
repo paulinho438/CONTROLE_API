@@ -15,6 +15,7 @@ use App\Adapter\Repository\PermissionItemRepository;
 use App\Adapter\Repository\PrevisaoRepository;
 use App\Adapter\Repository\SaidaRepository;
 use App\Adapter\Repository\UnidadeMedidaRepository;
+use App\Adapter\Repository\UserRepository;
 use App\Core\Ports\Driven\ColaboradorRepositoryInterface;
 use App\Core\Ports\Driven\DashboardRepositoryInterface;
 use App\Core\Ports\Driven\EntradaRepositoryInterface;
@@ -28,6 +29,7 @@ use App\Core\Ports\Driven\PermissionItemRepositoryInterface;
 use App\Core\Ports\Driven\PrevisaoRepositoryInterface;
 use App\Core\Ports\Driven\SaidaRepositoryInterface;
 use App\Core\Ports\Driven\UnidadeMedidaRepositoryInterface;
+use App\Core\Ports\Driven\UserRepositoryInterface;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -54,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PermissionGroupRepositoryInterface::class, PermissionGroupRepository::class);
         $this->app->bind(PermissionItemRepositoryInterface::class, PermissionItemRepository::class);
         $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**
