@@ -94,6 +94,12 @@ class PermissionSeeder extends Seeder
             ['name' => 'Criar Permissões', 'slug' => 'permissoes.create', 'group' => 'Administração'],
             ['name' => 'Editar Permissões', 'slug' => 'permissoes.edit', 'group' => 'Administração'],
             ['name' => 'Excluir Permissões', 'slug' => 'permissoes.delete', 'group' => 'Administração'],
+            
+            // Administração - Usuários
+            ['name' => 'Visualizar Usuários', 'slug' => 'usuarios.view', 'group' => 'Administração'],
+            ['name' => 'Criar Usuários', 'slug' => 'usuarios.create', 'group' => 'Administração'],
+            ['name' => 'Editar Usuários', 'slug' => 'usuarios.edit', 'group' => 'Administração'],
+            ['name' => 'Excluir Usuários', 'slug' => 'usuarios.delete', 'group' => 'Administração'],
         ];
 
         // Criar permissões usando DB::insert para evitar problemas com timestamps
