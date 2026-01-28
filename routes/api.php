@@ -102,7 +102,10 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('permission:entradas.delete')->delete('/entradas/{id}', [EntradaController::class, 'destroy']);
 
     // Saídas
-    Route::middleware('permission:saidas.view')->get('/saidas', [SaidaController::class, 'index']);
+    Route::middleware('permission:saidas.view')->group(function () {
+        Route::get('/saidas', [SaidaController::class, 'index']);
+        Route::get('/saidas/romaneio', [SaidaController::class, 'buscarRomaneio']);
+    });
     Route::middleware('permission:saidas.create')->post('/saidas', [SaidaController::class, 'store']);
     Route::middleware('permission:saidas.edit')->put('/saidas/{id}', [SaidaController::class, 'update']);
     Route::middleware('permission:saidas.delete')->delete('/saidas/{id}', [SaidaController::class, 'destroy']);

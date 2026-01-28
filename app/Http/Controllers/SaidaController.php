@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SaidaResource;
+use App\Http\Resources\RomaneioResource;
 use App\Services\SaidaService;
 use Illuminate\Http\Request;
 
@@ -69,6 +70,19 @@ class SaidaController extends Controller
         $this->service->excluir((int) $id);
 
         return response()->json(['ok' => true]);
+    }
+
+    public function buscarRomaneio(Request $request)
+    {
+        $request->validate([
+            'numero_romaneio' => 'required|string'
+        ], [], [
+            'numero_romaneio' => 'número do romaneio'
+        ]);
+
+        $numeroRomaneio = $request->query('numero_romaneio');
+        $saidas = $this->service->buscarRomaneio($numeroRomaneio);
+        return new RomaneioResource($saidas);
     }
 }
 

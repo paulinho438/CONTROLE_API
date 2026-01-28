@@ -11,5 +11,14 @@ class SaidaRepository extends BaseEloquentRepository implements SaidaRepositoryI
     {
         parent::__construct($model);
     }
+
+    public function buscarPorRomaneio(string $numeroRomaneio)
+    {
+        return $this->model->newQuery()
+            ->where('numero_romaneio', $numeroRomaneio)
+            ->with(['material', 'patio', 'destinoPatio', 'unidadeMedida', 'responsavel', 'grupo'])
+            ->orderBy('id', 'asc')
+            ->get();
+    }
 }
 

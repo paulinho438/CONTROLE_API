@@ -43,5 +43,14 @@ class SaidaService
 
         $this->repository->delete($id);
     }
+
+    public function buscarRomaneio(string $numeroRomaneio)
+    {
+        $saidas = $this->repository->buscarPorRomaneio($numeroRomaneio);
+        if ($saidas->isEmpty()) {
+            throw new BusinessException('Romaneio não encontrado.');
+        }
+        return $saidas;
+    }
 }
 
