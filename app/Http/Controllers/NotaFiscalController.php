@@ -15,9 +15,13 @@ class NotaFiscalController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return NotaFiscalResource::collection($this->service->listar());
+        $filters = [];
+        if ($request->filled('numero_nota')) {
+            $filters['numero_nota'] = $request->query('numero_nota');
+        }
+        return NotaFiscalResource::collection($this->service->listar($filters));
     }
 
     public function store(Request $request)

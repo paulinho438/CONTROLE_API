@@ -11,5 +11,23 @@ class NotaFiscalRepository extends BaseEloquentRepository implements NotaFiscalR
     {
         parent::__construct($model);
     }
+
+    public function all(array $filters = [])
+    {
+        $query = $this->model->newQuery();
+
+        foreach ($filters as $field => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            if ($field === 'numero_nota') {
+                $query->where('numero_nota', 'LIKE', '%' . $value . '%');
+                continue;
+            }
+            $query->where($field, $value);
+        }
+
+        return $query->orderBy('id', 'desc')->get();
+    }
 }
 
