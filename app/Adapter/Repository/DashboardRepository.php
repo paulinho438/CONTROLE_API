@@ -48,11 +48,19 @@ class DashboardRepository implements DashboardRepositoryInterface
 
         $entradas = $entradasQuery->get();
 
+        $saidasQuery = DB::table('saidas')
+            ->select('material_id', DB::raw('SUM(quantidade) as total'))
+            ->whereIn('material_id', $materiais->pluck('id'))
+            ->groupBy('material_id');
+
+        $saidas = $saidasQuery->get();
+
         return [
             'patios' => $patios,
             'grupos' => $grupos,
             'materiais' => $materiais,
             'entradas' => $entradas,
+            'saidas' => $saidas,
         ];
     }
 }

@@ -30,10 +30,18 @@ class DashboardService
             $materiais = $materiais->whereIn('id', $materialIds);
         }
         $entradas = $data['entradas'];
+        $saidas = $data['saidas'] ?? [];
 
         $entradasMap = [];
         foreach ($entradas as $entrada) {
             $entradasMap[$entrada->material_id][$entrada->patio_id] = (int) $entrada->total;
+        }
+
+        $saidasMap = [];
+        if (!empty($saidas)) {
+            foreach ($saidas as $saida) {
+                $saidasMap[$saida->material_id] = (int) $saida->total;
+            }
         }
 
         $resultadoGrupos = [];
@@ -62,12 +70,15 @@ class DashboardService
                     ];
                 }
 
+                $totalSaidas = $saidasMap[$material->id] ?? 0;
+
                 $materiaisResposta[] = [
                     'id' => $material->id,
                     'material' => $material->nome,
                     'estoque_previsto' => (int) $material->estoque_previsto,
                     'entradas_por_patio' => $entradasPorPatio,
                     'total_recebido' => $totalRecebido,
+                    'total_saidas' => $totalSaidas,
                     'diferenca' => $totalRecebido - (int) $material->estoque_previsto
                 ];
             }
