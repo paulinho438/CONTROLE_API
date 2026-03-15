@@ -28,7 +28,6 @@ class ExcelImportService
         try {
             $masterImport = new SystemMasterImport($batch->id);
             
-            // Excel import in memory/chunks (handles sheets mapping)
             Excel::import($masterImport, $file);
 
             $summary = [];
@@ -52,7 +51,6 @@ class ExcelImportService
                 $totalIgnored += $results['ignored'];
                 $totalErrors += count($results['errors']);
 
-                // Adiciona os erros em lote para a tabela import_errors
                 $errorData = [];
                 $chunkDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
                 
@@ -61,8 +59,11 @@ class ExcelImportService
                         'import_batch_id' => $batch->id,
                         'sheet_name' => $sheetName,
                         'row_number' => $error['row_number'],
-                        'error_message' => $error['error_message'],
-                        'row_data' => json_encode($error['row_data'], JSON_UNESCAPED_UNICODE),
+                        'error_message' => $this->sanitizeUtf8($error['error_message']),
+                        'row_data' => json_encode(
+                            $this->sanitizeUtf8($error['row_data']),
+                            JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+                        ),
                         'created_at' => $chunkDateRaw,
                         'updated_at' => $chunkDateRaw
                     ];
@@ -83,7 +84,7 @@ class ExcelImportService
                 'updated_rows' => $totalUpdated,
                 'ignored_rows' => $totalIgnored,
                 'error_rows' => $totalErrors,
-                'summary' => json_encode($summary, JSON_UNESCAPED_UNICODE),
+                'summary' => json_encode($summary, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE),
                 'updated_at' => $updateDateRaw
             ]);
 
@@ -93,11 +94,37 @@ class ExcelImportService
             $errorDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
             DB::table('import_batches')->where('id', $batch->id)->update([
                 'status' => 'failed',
-                'summary' => json_encode(['exception' => $e->getMessage()], JSON_UNESCAPED_UNICODE),
+                'summary' => json_encode(
+                    ['exception' => $this->sanitizeUtf8($e->getMessage())],
+                    JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+                ),
                 'updated_at' => $errorDateRaw
             ]);
 
             throw $e;
         }
+    }
+
+    /**
+     * Sanitize a value recursively to ensure valid UTF-8.
+     * Strips control characters and replaces invalid UTF-8 byte sequences.
+     */
+    private function sanitizeUtf8($value)
+    {
+        if (is_array($value)) {
+            return array_map([$this, 'sanitizeUtf8'], $value);
+        }
+
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        // Force UTF-8 encoding
+        $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+
+        // Remove control characters except \t (9), \n (10), \r (13)
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value);
+
+        return $value;
     }
 }
