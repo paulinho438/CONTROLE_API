@@ -53,6 +53,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/dashboard/balanco', [DashboardController::class, 'balanco']);
     });
 
+    // Importação de Excel
+    Route::post('/import-excel', [\App\Http\Controllers\ExcelImportController::class, 'store']);
+    Route::get('/import-excel/{batchId}/errors', [\App\Http\Controllers\ExcelImportController::class, 'getBatchErrors']);
+
     // Grupos
     Route::middleware('permission:grupos.view')->get('/grupos', [GrupoController::class, 'index']);
     Route::middleware('permission:grupos.create')->post('/grupos', [GrupoController::class, 'store']);
