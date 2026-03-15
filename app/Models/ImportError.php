@@ -11,12 +11,17 @@ class ImportError extends Model
 
     protected $table = 'import_errors';
 
+    // Disable Eloquent's automatic timestamps so we can insert raw SQL Server DATETIME2 manually
+    public $timestamps = false;
+
     protected $fillable = [
         'import_batch_id',
         'sheet_name',
         'row_number',
         'error_message',
-        'row_data'
+        'row_data',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [
@@ -26,10 +31,5 @@ class ImportError extends Model
     public function batch()
     {
         return $this->belongsTo(ImportBatch::class, 'import_batch_id');
-    }
-
-    public function getDateFormat()
-    {
-        return 'Y-m-d H:i:s';
     }
 }

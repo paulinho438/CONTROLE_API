@@ -10,6 +10,9 @@ class ImportBatch extends Model
     use HasFactory;
 
     protected $table = 'import_batches';
+    
+    // Disable Eloquent's automatic timestamps so we can insert raw SQL Server DATETIME2 manually
+    public $timestamps = false;
 
     protected $fillable = [
         'filename',
@@ -20,6 +23,8 @@ class ImportBatch extends Model
         'ignored_rows',
         'error_rows',
         'summary',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [
@@ -29,10 +34,5 @@ class ImportBatch extends Model
     public function errors()
     {
         return $this->hasMany(ImportError::class, 'import_batch_id');
-    }
-
-    public function getDateFormat()
-    {
-        return 'Y-m-d H:i:s';
     }
 }

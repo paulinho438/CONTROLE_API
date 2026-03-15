@@ -14,11 +14,16 @@ class ExcelImportService
     public function import($file)
     {
         $originalName = $file->getClientOriginalName();
+        $dateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
         
-        $batch = ImportBatch::create([
+        $batchId = DB::table('import_batches')->insertGetId([
             'filename' => $originalName,
-            'status' => 'processing'
+            'status' => 'processing',
+            'created_at' => $dateRaw,
+            'updated_at' => $dateRaw
         ]);
+
+        $batch = ImportBatch::find($batchId);
 
         try {
             $masterImport = new SystemMasterImport($batch->id);
@@ -49,7 +54,8 @@ class ExcelImportService
 
                 // Adiciona os erros em lote para a tabela import_errors
                 $errorData = [];
-                $now = now()->format('Y-m-d H:i:s');
+                $chunkDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+                
                 foreach ($results['errors'] as $error) {
                     $errorData[] = [
                         'import_batch_id' => $batch->id,
@@ -57,8 +63,8 @@ class ExcelImportService
                         'row_number' => $error['row_number'],
                         'error_message' => $error['error_message'],
                         'row_data' => json_encode($error['row_data'], JSON_UNESCAPED_UNICODE),
-                        'created_at' => $now,
-                        'updated_at' => $now
+                        'created_at' => $chunkDateRaw,
+                        'updated_at' => $chunkDateRaw
                     ];
                 }
 
@@ -69,22 +75,26 @@ class ExcelImportService
                 }
             }
 
-            $batch->update([
+            $updateDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+            DB::table('import_batches')->where('id', $batch->id)->update([
                 'status' => 'completed',
                 'total_rows' => $totalInserted + $totalUpdated + $totalIgnored + $totalErrors,
                 'inserted_rows' => $totalInserted,
                 'updated_rows' => $totalUpdated,
                 'ignored_rows' => $totalIgnored,
                 'error_rows' => $totalErrors,
-                'summary' => $summary
+                'summary' => json_encode($summary, JSON_UNESCAPED_UNICODE),
+                'updated_at' => $updateDateRaw
             ]);
 
-            return $batch;
+            return ImportBatch::find($batch->id);
 
         } catch (Exception $e) {
-            $batch->update([
+            $errorDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+            DB::table('import_batches')->where('id', $batch->id)->update([
                 'status' => 'failed',
-                'summary' => ['exception' => $e->getMessage()]
+                'summary' => json_encode(['exception' => $e->getMessage()], JSON_UNESCAPED_UNICODE),
+                'updated_at' => $errorDateRaw
             ]);
 
             throw $e;
