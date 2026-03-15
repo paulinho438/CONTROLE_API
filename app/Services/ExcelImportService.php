@@ -49,7 +49,7 @@ class ExcelImportService
 
                 // Adiciona os erros em lote para a tabela import_errors
                 $errorData = [];
-                $now = now();
+                $now = now()->format('Y-m-d H:i:s');
                 foreach ($results['errors'] as $error) {
                     $errorData[] = [
                         'import_batch_id' => $batch->id,
