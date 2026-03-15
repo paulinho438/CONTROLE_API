@@ -25,8 +25,6 @@ class GruposImport extends BaseSheetImport
             $dataCadastro = $this->normalizeDate($row['data_cadastro'] ?? null);
 
             try {
-                DB::beginTransaction();
-
                 $grupo = Grupo::where('nome', $nome)->first();
 
                 if ($grupo) {
@@ -41,10 +39,7 @@ class GruposImport extends BaseSheetImport
                     ]);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar grupo: ' . $e->getMessage(), $row->toArray());
             }
         }

@@ -53,8 +53,6 @@ class NotasFiscaisImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $nota = NotaFiscal::where('numero_nota', $numeroNota)->first();
 
                 $data = [
@@ -75,10 +73,7 @@ class NotasFiscaisImport extends BaseSheetImport
                     NotaFiscal::create($data);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar nota fiscal: ' . $e->getMessage(), $row->toArray());
             }
         }

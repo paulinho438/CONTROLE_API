@@ -23,8 +23,6 @@ class PatiosImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $patio = Patio::where('nome', $nome)->first();
 
                 if ($patio) {
@@ -33,10 +31,7 @@ class PatiosImport extends BaseSheetImport
                     Patio::create(['nome' => $nome]);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar pátio: ' . $e->getMessage(), $row->toArray());
             }
         }

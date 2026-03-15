@@ -25,8 +25,6 @@ class FornecedoresImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $fornecedor = null;
                 
                 if (!empty($cnpjCpfOrig)) {
@@ -61,10 +59,7 @@ class FornecedoresImport extends BaseSheetImport
                     Fornecedor::create($data);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar fornecedor: ' . $e->getMessage(), $row->toArray());
             }
         }

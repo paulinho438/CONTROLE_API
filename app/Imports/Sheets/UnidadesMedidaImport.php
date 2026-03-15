@@ -23,8 +23,6 @@ class UnidadesMedidaImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $unidadeObj = UnidadeMedida::where('unidade', $unidade)->first();
 
                 if ($unidadeObj) {
@@ -33,10 +31,7 @@ class UnidadesMedidaImport extends BaseSheetImport
                     UnidadeMedida::create(['unidade' => $unidade]);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar unidade de medida: ' . $e->getMessage(), $row->toArray());
             }
         }

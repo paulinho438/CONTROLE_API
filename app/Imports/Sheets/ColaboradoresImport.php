@@ -23,8 +23,6 @@ class ColaboradoresImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $colaborador = Colaborador::where('nome_completo', $nome)->first();
 
                 $data = [
@@ -41,10 +39,7 @@ class ColaboradoresImport extends BaseSheetImport
                     Colaborador::create($data);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar colaborador: ' . $e->getMessage(), $row->toArray());
             }
         }

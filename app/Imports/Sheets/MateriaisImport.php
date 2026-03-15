@@ -36,8 +36,6 @@ class MateriaisImport extends BaseSheetImport
             }
 
             try {
-                DB::beginTransaction();
-
                 $material = Material::where('nome', $nomeMaterial)->first();
                 $data = [
                     'aplicacao' => $this->normalizeString($row['aplicacao'] ?? null),
@@ -62,10 +60,7 @@ class MateriaisImport extends BaseSheetImport
                     Material::create($data);
                     $this->inserted++;
                 }
-
-                DB::commit();
             } catch (Exception $e) {
-                DB::rollBack();
                 $this->addError($rowNumber, 'Erro ao salvar material: ' . $e->getMessage(), $row->toArray());
             }
         }
