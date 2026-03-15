@@ -54,12 +54,12 @@ abstract class BaseSheetImport implements ToCollection, WithHeadingRow
 
         // Se for data em formato numérico do Excel
         if (is_numeric($value)) {
-            return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
+            return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d\T00:00:00.000');
         }
 
         // Tenta fazer o parse via Carbon
         try {
-            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+            return \Carbon\Carbon::parse($value)->format('Y-m-d\T00:00:00.000');
         } catch (\Exception $e) {
             return null;
         }

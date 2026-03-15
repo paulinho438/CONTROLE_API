@@ -14,7 +14,7 @@ class ExcelImportService
     public function import($file)
     {
         $originalName = $file->getClientOriginalName();
-        $dateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+        $dateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
         
         $batchId = DB::table('import_batches')->insertGetId([
             'filename' => $originalName,
@@ -54,7 +54,7 @@ class ExcelImportService
 
                 // Adiciona os erros em lote para a tabela import_errors
                 $errorData = [];
-                $chunkDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+                $chunkDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
                 
                 foreach ($results['errors'] as $error) {
                     $errorData[] = [
@@ -75,7 +75,7 @@ class ExcelImportService
                 }
             }
 
-            $updateDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+            $updateDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
             DB::table('import_batches')->where('id', $batch->id)->update([
                 'status' => 'completed',
                 'total_rows' => $totalInserted + $totalUpdated + $totalIgnored + $totalErrors,
@@ -90,7 +90,7 @@ class ExcelImportService
             return ImportBatch::find($batch->id);
 
         } catch (Exception $e) {
-            $errorDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d H:i:s') . "')");
+            $errorDateRaw = DB::raw("CONVERT(DATETIME2, '" . now()->format('Y-m-d\TH:i:s.v') . "')");
             DB::table('import_batches')->where('id', $batch->id)->update([
                 'status' => 'failed',
                 'summary' => json_encode(['exception' => $e->getMessage()], JSON_UNESCAPED_UNICODE),
