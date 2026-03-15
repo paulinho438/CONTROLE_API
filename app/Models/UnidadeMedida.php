@@ -14,5 +14,10 @@ class UnidadeMedida extends Model
     protected $fillable = [
         'unidade'
     ];
+
+    public function getDateFormat()
+    {
+        return 'Y-m-d H:i:s';
+    }
 }
 

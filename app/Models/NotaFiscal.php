@@ -26,5 +26,10 @@ class NotaFiscal extends Model
     {
         return $this->belongsTo(Fornecedor::class, 'fornecedor_id');
     }
+
+    public function getDateFormat()
+    {
+        return 'Y-m-d H:i:s';
+    }
 }
 
